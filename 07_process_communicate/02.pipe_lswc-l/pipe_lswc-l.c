@@ -1,3 +1,4 @@
+//ls | wc -l
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -13,8 +14,6 @@ int main(int argc, char * argv[])
         exit(1);
     }
 
-    char * str = "hello World!";
-    char buff[1024]={0};
 
     pid_t pid = fork();
     if(pid > 0)
@@ -23,10 +22,10 @@ int main(int argc, char * argv[])
         //father : both read and write end of pipe are open by default
         //father need to close the read end of pipe
         close(fd[0]);
-        write(fd[1], str, strlen(str));
+        dup2(fd[1], STDOUT_FILENO);
+        execlp("ls", "ls", NULL);
         close(fd[1]);
         //保证父进程后结束，有利于子进程先打印
-        sleep(1);
     }
     else if(pid == 0)
     {
@@ -34,8 +33,10 @@ int main(int argc, char * argv[])
         //chlid : both read and write end of pipe are open by default
         //child need to close the write end of the pipe
         close(fd[1]);
-        read(fd[0], buff, sizeof(buff));
-        printf("child read pipe content=%s\n", buff);
+        //wc 默认从标准输入读
+        //wc 现在需要从管道读数据
+        dup2(fd[0], STDIN_FILENO);
+        execlp("wc", "wc", "-l", NULL);
         close(fd[0]);
     }
     return 0;
