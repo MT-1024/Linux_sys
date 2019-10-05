@@ -29,6 +29,8 @@ int main(int argc, char * argv[])
         exit(1);
     }
 
+    close(fd);
+
     strcpy(p, "Hello World!");
 
     printf("[%s]\n", p);
