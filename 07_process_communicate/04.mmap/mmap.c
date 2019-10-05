@@ -32,8 +32,14 @@ int main(int argc, char * argv[])
     close(fd);
 
     strcpy(p, "Hello World!");
-
     printf("[%s]\n", p);
+    
+    //回收映射区
+    int ret = munmap(p, len);
+    if(-1 == ret)
+    {
+        perror("munmap error");
+    }
 
     return 0;
 }
