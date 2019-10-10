@@ -20,7 +20,7 @@ int main(int argc, char * argv[])
         printf("---child---, child pid = %d, ppid = %d\n", getpid(), getppid());
         printf("fork pid=%d\n", pid);
         sleep(2);
-        //子进程发送SIGKILL信号给父进程,结束父进程
+        //子进程发送SIGKILL信号给父进程所在组的所有进程（包括父进程）
         kill(0, SIGKILL);
     }
 
