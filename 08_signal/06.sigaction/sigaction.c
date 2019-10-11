@@ -22,7 +22,7 @@ int main(int argc, char * argv[])
         perror("sigaction error");
         return -1;
     }
-    //死循环保证程序一直运行，通过键盘发送ctrl + c SIGINT信号，可以看到效果
+    //死循环保证程序一直运行，通过键盘发送ctrl + c SIGINT信号，可以看到效果.
     while(1);
 
     return 0;
