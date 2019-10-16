@@ -26,7 +26,8 @@ int main()
         exit(1);
     }
 
-    //子线程分离
+    //设置子线程分离
+    //线程终止，会自动清理PCB，无需回收
     ret = pthread_detach(tid);
     if(0 != ret)
     {
@@ -36,7 +37,7 @@ int main()
 
     sleep(1);
 
-    //子线程已经分离，内核会自动回收资源，不需要再在主线程中调用pthread_join回收子线程
+    //子线程已经分离，会自动清理PCB，不需要再在主线程中调用pthread_join回收子线程
     ret = pthread_join(tid, NULL);
     if(0 != ret)
     {
