@@ -94,5 +94,9 @@ int main()
 
     pthread_join(producer_thread, NULL);     //回收生产者线程
     pthread_join(consumer_thread, NULL);     //回收消费者线程
+
+    pthread_cond_destroy(&mycond);
+    pthread_mutex_destroy(&mymutex);
+
     return 0;
 }
