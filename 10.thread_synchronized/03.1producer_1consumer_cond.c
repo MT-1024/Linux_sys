@@ -48,10 +48,12 @@ void * consumter(void * arg)
         printf("---consumer:[%d]\n", head->data);
         Node * temp = head;
         head = head->next;
+
+        pthread_mutex_unlock(&mymutex);
+
         free(temp);
         temp = NULL;
 
-        pthread_mutex_unlock(&mymutex);
         sleep(rand() % 3); 
     }
     return NULL;
@@ -65,9 +67,11 @@ void * producer(void * arg)
         tempnode->data = rand() % 1000 + 1;     //1~1000
         printf("producer:[%d]\n", tempnode->data);
         pthread_mutex_lock(&mymutex);   //加锁互斥量
+
         //头插法建立链表，head不断移动，指向新创建的节点
         tempnode->next = head;
         head = tempnode;
+
         pthread_mutex_unlock(&mymutex);      //解锁互斥量
         pthread_cond_signal(&mycond);     //通知pthread_cond_wait()
 
