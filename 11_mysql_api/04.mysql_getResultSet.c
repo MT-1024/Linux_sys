@@ -46,9 +46,19 @@ int main()
     }
     
 
-    int num = mysql_num_fields(result_set); 
-    //5.循环获取每一条记录
+    
     int colnum = mysql_num_fields(result_set);
+    
+    //获取表的字段信息
+    printf("\n--------------------------------------------------\n");
+    MYSQL_FIELD * field = mysql_fetch_fields(result_set);
+    for(int i = 0; i < colnum; i++)
+    {
+        printf("%s  ", field[i].name);
+    }
+    printf("\n--------------------------------------------------\n");
+
+    //5.循环获取每一条记录
     MYSQL_ROW row= NULL;
     while(row = mysql_fetch_row(result_set))
     {
