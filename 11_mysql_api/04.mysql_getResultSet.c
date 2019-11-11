@@ -46,7 +46,7 @@ int main()
     }
     
 
-    
+    //获取结果集的列 
     int colnum = mysql_num_fields(result_set);
     
     //获取表的字段信息
