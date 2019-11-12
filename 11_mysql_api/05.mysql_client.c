@@ -16,14 +16,21 @@ int main()
     }
 
     printf("mysql init success\n");
-    
+
     //2.建立mysql连接
-    MYSQL *conn = mysql_real_connect(msq, "192.168.0.115", "wjf", "321284", "scott", 3306, NULL, 0);
+    MYSQL *conn = mysql_real_connect(msq, "localhost", "wjf", "321284", "scott", 0, NULL, 0);
     if(conn == NULL)
     {
         printf("mysql connect error:[%s]\n", mysql_error(msq));
     }
     printf("mysql connect success\n");
+
+    //获取当前连接的字符集
+    printf("before set character : %s\n", mysql_character_set_name(conn));
+
+    //设置默认使用的编码集
+    mysql_set_character_set(conn, "utf8");
+    printf("after character : %s\n", mysql_character_set_name(conn));
 
     //循环等待用户输入
     char buf[1024];
@@ -38,6 +45,32 @@ int main()
         //接收用户输入
         memset(buf, 0 , sizeof(buf));
         read(STDIN_FILENO, buf, sizeof(buf));
+
+        //去掉buf末尾回车
+        buf[strlen(buf) - 1] = '\0';
+
+        //去掉buf末尾的分号
+        char * p = strchr(buf, ';');
+        if(p != NULL)
+        {
+            *p = '\0';
+        }
+
+        //过滤掉buf前面的空格
+        int pos; 
+        int len = strlen(buf);
+        for(pos = 0; pos < strlen(buf); pos++)
+        {
+           if(buf[pos] == ' ') 
+           {
+               continue;
+           }
+           else
+           {
+               break;
+           }
+        }
+        memmove(buf, buf + pos, len + 1 - pos);
         printf("buf==[%s]\n", buf);
 
         //判断用户输入的是否为exit或者quit, 如果是则退出
@@ -62,9 +95,47 @@ int main()
         }
 
         //下面是selec查询的情况
+        //获取结果集
+        MYSQL_RES * result_set = mysql_store_result(conn);
+        if(NULL == result_set)
+        {
+            printf("mysql_store_result_set error, %s\n", mysql_error(conn));
+            continue;
+        }
         //获取表的列数
-        colnum = mysql_num_fields()
-         
+        colnum = mysql_num_fields(result_set);
+
+        //获取表头信息
+        MYSQL_FIELD * fields = mysql_fetch_fields(result_set);
+        if(NULL == fields)
+        {
+            printf("mysql_fetch_fields error, %s\n", mysql_error(conn));
+            //释放结果集
+            mysql_free_result(result_set);
+            continue;
+        }
+        //打印表头
+        printf("\n---------------------------------\n");
+        for(int i = 0; i < colnum; i++)
+        {
+            printf("%s  ", fields[i].name);
+        }
+        printf("\n---------------------------------\n");
+
+        //打印每行记录
+        MYSQL_ROW row = NULL;
+        while(row = mysql_fetch_row(result_set))
+        {
+            for(int i = 0; i < colnum; ++i)
+            {
+                printf("%s  ", row[i]);
+            }
+            printf("\n");
+        }
+
+
+
+
     }
 
     //释放资源
