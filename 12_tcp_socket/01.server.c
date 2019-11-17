@@ -7,6 +7,7 @@
 #include <netinet/ip.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <arpa/inet.h>
 
 #define SERVER_PORT 8089
 
@@ -50,6 +51,11 @@ int main()
     {
         sys_err("accept error\n");
     }
+
+    char client_ip[1024];
+    printf("client IP:%s , client PORT:%d\n", 
+           inet_ntop(AF_INET, (void *)&client_addr.sin_addr.s_addr, client_ip, sizeof(client_ip)), 
+           ntohs(client_addr.sin_port));
 
     //读客户端来的数据
     char buf[4096];
