@@ -1,1 +1,1 @@
-# this is study record and some cases of linux system program
+# this is some cases of linux system program
